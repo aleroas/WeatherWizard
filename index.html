@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Dashboard</h1>
+    <form id="search-form">
+      <input type="text" id="city-input" placeholder="Enter city name" required>
+      <button type="submit">Search</button>
+    </form>
+    <div id="weather-display">
+      <!-- Weather data will be displayed here -->
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "32edaa387e1549e6aa413831241907";
+
+    async function getWeatherData(city) {
+      const weatherUrl = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5`;
+      try {
+        const weatherResponse = await fetch(weatherUrl);
+        if (!weatherResponse.ok) {
+          throw new Error(`Weather API error: ${weatherResponse.statusText}`);
+        }
+        const weatherData = await weatherResponse.json();
+
+        displayWeatherData(weatherData);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
+    }
+
+    function displayWeatherData(data) {
+      const weatherDisplay = document.getElementById("weather-display");
+      weatherDisplay.innerHTML = "";
+
+      // Current weather
+      const currentWeather = document.createElement("div");
+      currentWeather.classList.add("current-weather");
+      currentWeather.innerHTML = `
+        <h2>${data.location.name} (${new Date(data.current.last_updated).toLocaleDateString()})</h2>
+        <p>Temperature: ${data.current.temp_c} °C</p>
+        <p>Wind: ${data.current.wind_kph} kph</p>
+        <p>Humidity: ${data.current.humidity} %</p>
+        <p>${data.current.condition.text}</p>
+        <img src="${data.current.condition.icon}" alt="Weather icon">
+      `;
+
+      weatherDisplay.appendChild(currentWeather);
+
+      // 5-day forecast
+      const forecastContainer = document.createElement("div");
+      forecastContainer.classList.add("forecast-container");
+      forecastContainer.innerHTML = "<h2>5-Day Forecast:</h2>";
+
+      data.forecast.forecastday.forEach(day => {
+        const forecast = document.createElement("div");
+        forecast.classList.add("forecast");
+        forecast.innerHTML = `
+          <h3>${new Date(day.date).toLocaleDateString()}</h3>
+          <p>Temperature: ${day.day.avgtemp_c} °C</p>
+          <p>Wind: ${day.day.maxwind_kph} kph</p>
+          <p>Humidity: ${day.day.avghumidity} %</p>
+          <p>${day.day.condition.text}</p>
+          <img src="${day.day.condition.icon}" alt="Weather icon">
+        `;
+        forecastContainer.appendChild(forecast);
+      });
+
+      weatherDisplay.appendChild(forecastContainer);
+    }
+
+    document.getElementById("search-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const city = document.getElementById("city-input").value;
+      getWeatherData(city);
+    });
+  </script>
+</body>
+</html>
