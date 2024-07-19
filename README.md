@@ -20,7 +20,8 @@ This project is a weather dashboard that allows users to search for the current 
 - The search history is stored in localStorage and can be clicked to view the weather again.
 
 ## Screenshot
-![Weather Dashboard Screenshot](./assets/images/screenshot.png)
+![Screen Shot 2024-07-18 at 9 49 58 PM](https://github.com/user-attachments/assets/338ead22-c39b-40a9-a40e-1327c565faa8)
+
 
 ## Technologies Used
 - HTML
